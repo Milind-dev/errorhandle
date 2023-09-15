@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const errorHandler = require("./middleware/errorhandler");
 const { tryCatch } = require("./utils/trycatch");
+const joi = require('joi')
 
 const app = express();
 // app.use(app.json())
@@ -22,17 +23,16 @@ app.get(
   })
 );
 
-app.post("/login", async (req, res) => {
-  try {
-    const user = getUser();
-    if (!user) {
-      throw new Error("user not found");
+const schema = joi.object({
+    userId:joi.number().required(),
+}) 
+app.post("/login", tryCatch(async(req,res) => {    
+        const {error,value} = schema.validate({}) 
+        if(error) throw error;
+        console.log(error)
     }
-  } catch (error) {
-    return res.status(400).send(error.message);
-  }
-  return res.status(200).json({ status: true });
-});
+   )
+  );
 app.use(errorHandler);
 
 app.listen(2000, () => {
